@@ -6,3 +6,4 @@ electron/node_modules/
 web/dist/
 server/dist/
 server/weights/
+.DS_Store
