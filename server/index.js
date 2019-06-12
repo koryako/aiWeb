@@ -1,5 +1,5 @@
-
 import express from "express";
+//const express =require("express");
 const routes = require('./routes/index.js')
 var request = require('request');
 var config=require('./config.js');
@@ -7,6 +7,8 @@ var config=require('./config.js');
 var jwc=require('./jwc.js')
 var url = require('url');
 const app=express();
+app.engine('html', require('ejs').renderFile);
+app.set("view engine","html");
 const apiRoutes=express.Router();
 apiRoutes.use((req,res,next)=>{
     let token= req.headers['authorization'];
@@ -73,6 +75,7 @@ apiRoutes.use((req,res,next)=>{
 });
 
 app.use('/',routes(apiRoutes));
+
 app.listen(3001,()=>{
     console.log('服务器启动');
 })

@@ -1,4 +1,6 @@
 
+
+const ui=require('../controllers/ui.js')
 module.exports=(router)=>{
-    router.get('/uindex_2', path.join(__dirname, "./index_2.html"));
+    router.get('/uindex_2', ui.go);
  }

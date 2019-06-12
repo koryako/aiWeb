@@ -1,5 +1,6 @@
 const upload=require('../controllers/upload.js')
 
 module.exports=(router)=>{
-   router.get('/upload',upload.up);
+  router.options('/upload',upload.up);
+   router.post('/upload',upload.up);
 }
