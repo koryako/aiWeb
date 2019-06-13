@@ -39,3 +39,6 @@ https://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2650737814&idx=2&sn=8bfdcc
 
 教程 | 如何利用TensorFlow.js部署简单的AI版「你画我猜」图像识别应用
 https://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2650745597&idx=2&sn=fecf58e882c8a2586a260e06c6f7f802&chksm=871aee83b06d6795bf76f13e573a86280cb48f99a7225df2e97956f1184aa787beb05413d781&mpshare=1&scene=1&srcid=0806ctFPPOeldHXbzB9qib9T#rd]
+
+速度超Mask RCNN四倍，仅在单个GPU训练的实时实例分割算法 | 技术头条
+https://blog.csdn.net/dQCFKyQDXYm3F8rB0/article/details/91388768
