@@ -36,3 +36,6 @@ https://mp.weixin.qq.com/s?__biz=MzA4NzE1NzYyMw==&mid=2247496426&idx=3&sn=928d23
 
 教程 | 如何使用 Kubernetes 轻松部署深度学习模型
 https://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2650737814&idx=2&sn=8bfdccb1b7b2db5097728502cf3c669a&chksm=871ac8e8b06d41fe9e210ec6c5da0ff9e1933dc884b96cce58f61c9cf96181ab94ddc505bac3&mpshare=1&scene=1&srcid=02133aMbsLNQpk0aTui7HLHY#rd]
+
+教程 | 如何利用TensorFlow.js部署简单的AI版「你画我猜」图像识别应用
+https://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2650745597&idx=2&sn=fecf58e882c8a2586a260e06c6f7f802&chksm=871aee83b06d6795bf76f13e573a86280cb48f99a7225df2e97956f1184aa787beb05413d781&mpshare=1&scene=1&srcid=0806ctFPPOeldHXbzB9qib9T#rd]
