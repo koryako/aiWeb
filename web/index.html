@@ -57,29 +57,63 @@ console.log(data);
 
 <video width="480" height="480" id="myVideo" autoplay></video>
 <canvas width="480" height="480" id="myCanvas"></canvas>
+<canvas width="480" height="480" id="myCanvas2"></canvas>
 <button id="myButton">拍摄</button>
 <button id="myButton2">预览</button>
 <button id="myButton3">
 <a download="video.png">另存为</a>
 </button>
-<script src="./upload.js"></script>
+<script src="./tracking-min.js"></script>
+<script src="./face-min.js"></script>
 <script>
+
+
   window.addEventListener('DOMContentLoaded',function(){
         navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
        var canvas= document.getElementById('myCanvas')
+       var canvas2= document.getElementById('myCanvas2')
+       var cobj2=canvas2.getContext('2d');
             var cobj=canvas.getContext('2d');
             var vobj=document.getElementById('myVideo');
+            var rects;
             navigator.getUserMedia({video:true,audio:false},function(stream){    
                  //将采集到的视频信息显示在video标签中  		
                 vobj.srcObject = stream;   	 
                 vobj.play();
               },function(error){console.log("Video capture error: ", error.code);});
+              var tracker=new tracking.ObjectTracker('face');
+              tracker.setInitialScale(4);
+              tracker.setStepSize(2);
+              tracker.setEdgesDensity(0.1);
+             
+              tracking.track('#myVideo',tracker,{camera:true});
+              tracker.on('track',function(event){
+               // cobj.clearRect(0,0,canvas.width,canvas.height);
+               cobj.drawImage(vobj, 0, 0, canvas.width,canvas.height);
+               if (event.data.length===0){
+
+               }else{
+                event.data.forEach(function(rect){
+                     cobj.strokeStyle="#a64ceb";
+                     cobj.strokeRect(rect.x,rect.y,rect.width,rect.height);
+                     rects=rect;
+               })
+
+               }
+              
+              });
 
           document.getElementById("myButton").addEventListener("click", function () {
-                cobj.drawImage(vobj, 160, 0, 480, 480);
-              var data = canvas.toDataURL('image/jpeg',0.8);
-              console.log(data);
-              upload(data,'image/jpeg','http://localhost:3001/upload');
+            console.log(rects);
+               //tracker.stop();
+              cobj2.clearRect(0, 0, canvas2.width,canvas2.height);
+              var dataimg= cobj.getImageData(rects.x,rects.y,rects.width,rects.height);
+              console.log(dataimg);
+            
+             cobj2.putImageData(dataimg,0,0);
+             var data = canvas2.toDataURL('image/jpeg',0.8);
+             console.log(data);
+             upload(data,'image/jpeg','http://localhost:3001/upload');
             });
 
             //    图片上传，将base64的图片转成二进制对象，塞进formdata上传

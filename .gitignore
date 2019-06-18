@@ -1,6 +1,7 @@
 node_modules/
 server/node_modules/
 web/node_modules/
+web/.cache/
 tfjs-demo/node_modules/
 electron/node_modules/
 web/dist/
