@@ -76,6 +76,6 @@ apiRoutes.use((req,res,next)=>{
 
 app.use('/',routes(apiRoutes));
 
-app.listen(3001,()=>{
+app.listen(3033,()=>{
     console.log('服务器启动');
 })

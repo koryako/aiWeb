@@ -1,10 +1,10 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-   <meta charset="utf-8">
-	<title>webcam</title>
-	<meta name="viewport" id="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
-		  </head>
+<meta charset="utf-8">
+<title>webcam</title>
+<meta name="viewport" id="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
+</head>
 <style>
 *{margin:0;padding:0;}
   #log{
@@ -14,50 +14,11 @@
         }
 
 </style>
-
-<!--<script src="http://localhost:3000/socket.io/socket.io.js"></script>-->
-<!--<script src="http://180.76.148.87:3000/socket.io/socket.io.js"></script>-->
-<!--<script>
- if ("undefined" == typeof(io)) {
-//alert("Server not available at this moment. Please retry later");
-	} else {
-	var socket = io();
-	var socket = io.connect('http://localhost:3000');
-}
-
-socket.on('back',function(data){
-console.log(data);
-});
-
-
-socket.emit('send','开始执行');
-</script>-->
-<!--<script src="src/event.js"></script>
-<script src="src/ini.js"></script>
-<script src="src/math.js"></script>
-<script src="src/controller.js"></script>
-<script src="src/neural.js"></script>
-<script src="src/data.js"></script>
-
- 
-<script>
-
-    var event=new Emitter();
-    event.on('getAlldata',function(data){
-
-console.log(data);
-
-
-})
-
-</script>-->
-
 <body  >
 <p id="log"></p>
-
 <video width="480" height="480" id="myVideo" autoplay></video>
 <canvas width="480" height="480" id="myCanvas"></canvas>
-<canvas width="480" height="480" id="myCanvas2"></canvas>
+<canvas  id="myCanvas2"></canvas>
 <button id="myButton">拍摄</button>
 <button id="myButton2">预览</button>
 <button id="myButton3">
@@ -75,45 +36,43 @@ console.log(data);
        var cobj2=canvas2.getContext('2d');
             var cobj=canvas.getContext('2d');
             var vobj=document.getElementById('myVideo');
-            var rects;
+           var rects={};
+           rects.width=240;
+           rects.height=400;
+           rects.x=120;
+           rects.y=0;
+            
             navigator.getUserMedia({video:true,audio:false},function(stream){    
                  //将采集到的视频信息显示在video标签中  		
                 vobj.srcObject = stream;   	 
                 vobj.play();
               },function(error){console.log("Video capture error: ", error.code);});
-              var tracker=new tracking.ObjectTracker('face');
-              tracker.setInitialScale(4);
-              tracker.setStepSize(2);
-              tracker.setEdgesDensity(0.1);
-             
-              tracking.track('#myVideo',tracker,{camera:true});
-              tracker.on('track',function(event){
-               // cobj.clearRect(0,0,canvas.width,canvas.height);
-               cobj.drawImage(vobj, 0, 0, canvas.width,canvas.height);
-               if (event.data.length===0){
+          
 
-               }else{
-                event.data.forEach(function(rect){
-                     cobj.strokeStyle="#a64ceb";
-                     cobj.strokeRect(rect.x,rect.y,rect.width,rect.height);
-                     rects=rect;
-               })
-
+               function step(timestamp) {
+                  cobj.clearRect(0,0,canvas.width,canvas.height);
+                  cobj.drawImage(vobj, 0, 0, canvas.width,canvas.height);
+                  cobj.strokeStyle="#a64ceb";
+                  cobj.strokeRect(rects.x,rects.y,rects.width,rects.height);
+                     window.requestAnimationFrame(step);
+  
                }
-              
-              });
+
+              window.requestAnimationFrame(step);
 
           document.getElementById("myButton").addEventListener("click", function () {
             console.log(rects);
+            canvas2.width = rects.width;
+            canvas2.height = rects.height;
                //tracker.stop();
-              cobj2.clearRect(0, 0, canvas2.width,canvas2.height);
+              cobj2.clearRect(0, 0, rects.width,rects.height);
               var dataimg= cobj.getImageData(rects.x,rects.y,rects.width,rects.height);
               console.log(dataimg);
-            
+             cobj2.scale(0.5,0.5)
              cobj2.putImageData(dataimg,0,0);
              var data = canvas2.toDataURL('image/jpeg',0.8);
              console.log(data);
-             upload(data,'image/jpeg','http://localhost:3001/upload');
+             upload(data,'image/jpeg','http://localhost:3033/upload');
             });
 
             //    图片上传，将base64的图片转成二进制对象，塞进formdata上传
@@ -245,164 +204,10 @@ console.log(data);
   });
 
   </script>
-
-    <!-- <script src="./index.js"></script>-->
        <script>
 
              
-	   
-	   /*
-          utils.ctreateCanvas("gameCanvas")//创建自适应画布
-           var canvas = document.getElementById("gameCanvas"),  
-               context = canvas.getContext("2d"); 
-              canvas.style.background='#000';
-          var ballslayer=new Array(),
-          x=getDrawStartPoint(num,cap,rad,canvas.width/2),y=canvas.height/4,
-          rad=25,
-          num=5,
-          cap=10,
-          Ninput=new Array();//输入层
-            for (var w=0;w<2;w++){
-                x =getDrawStartPoint(num,cap,rad,canvas.width/2);
-                y +=rad*2+40;
-                     ballslayer.push(balllayer(rad,cap,num));
-                }
 
-                     x =getDrawStartPoint(num,cap,rad,canvas.width/2);//输入层
-                     y +=rad*2+40;
-            for (var i=0;i<num;i++){
-                x +=rad*2+cap;
-                y+=0;
-                   var rect={};
-                       rect.y=y;
-                       rect.x=x;
-                       rect.rad=rad;
-                      Ninput.push(rect);
-            }
-
-window.onload = function(){ 
-           //将canvas传入，该方法会返回一个包含属性x和y的对象 
-                 mouse = utils.captureMouse(canvas); 
-                        utils.captureMouse2(canvas); //方法getBoundingClientRect
-
-             //为canvas绑定mousedown事件，当鼠标按下的时候打印出当前鼠标相对于canvas的坐标值 
-             canvas.addEventListener('mousedown',function(event){ 
-               console.log("x:" +mouse.x +",y:" + mouse.y); 
-             }); 
-
-           var ball = new Ball(); 
-                  ball.x = canvas.width/2; 
-                  ball.y = canvas.height/2; 
-             
-          
-
-               var Rect1 = {
-                x: Math.random()*canvas.width,
-                y: Math.random()*canvas.height
-            }
-            
-            //create a red square ,assgin random position
-            var Rect2 = {
-                x:Math.random()*canvas.width,
-                y:Math.random()*canvas.height
-            }
-            
-           
-             
-
-               //calculate the distance between two points 
-            var dx = Rect1.x - Rect2.x;
-            var dy = Rect1.y - Rect2.y;
-            var dis = Math.sqrt(dx*dx + dy*dy);
-            
-            var log = document.getElementById('log');
-            log.style.left = (Rect1.x + Rect2.x)/2 + 'px';
-            log.style.top = (Rect1.y + Rect2.y)/2 + 'px';
- 
-            log.innerHTML = "distance:" + dis;
-           var  fr =0; 
-            
-         
-
- 
-           (function drawFram(){ 
-               window.requestAnimationFrame(drawFram,canvas); 
-               context.clearRect(0,0,canvas.width,canvas.height); 
-                //create a black square ,assign random position
-             drawLine(Rect1,Rect2,'red');
-           drawSquare(Rect1.x,Rect1.y,rad,colors[0]);
-           drawSquare(Rect2.x,Rect2.y,rad,colors[1]);
-             fr += 0.01; 
-              ball.x=An1(fr,50).x;
-              ball.draw(context); 
-           //console.log(brain.CalculateSplitPoints())
-
-            
-
-
-     for (var i=0;i<ballslayer.length;i++){
-          for (var w=0;w<ballslayer[i].length;w++){
-              ballslayer[i][w].draw(context);   
-          }
-      }
-
-
-
-for (var i=0;i<Ninput.length;i++){
-  drawSquare(Ninput[i].x,Ninput[i].y,Ninput[i].rad,colors[i]);
-
-   
-}
-
-
-for(var t=0;t<Ninput.length;t++){
-          
-    drawLine(Ninput[t],ballslayer[1][t],colors[t]);
-}   
-
-
-
-           })(); 
-      
-  //onkeydown事件的回调处理函数   
-//根据用户的按键来控制小球的移动   
-window.addEventListener('keydown',moveBall,false); 
-function moveBall(event){   
-    switch(event.keyCode){ 
-        case 37:    //左方向键   
-            ball.moveLeft();  
-              console.log(ball.x)
-            break;   
-        case 38:    //上方向键   
-            ball.moveUp();   
-            break;   
-        case 39:    //右方向键   
-            ball.moveRight(); 
-            console.log(ball.x)  
-            break;   
-        case 40:    //下方向键   
-            ball.moveDown();   
-            break;   
-        default:    //其他按键操作不响应   
-            return;   
-    }   
-} 
-
-
- }
-
-
-  var MouseController=new Ccontroller();
-  //console.log(MouseController.m_pNet);
-//console.log(MouseController.m_iNumValidPatterns);
-  MouseController.TrainNetwork();
-
-//var brain=new CNeuralNet(4,10,1,10);
-//brain.CreateNet();//创建神经网络
-
-//console.log('神经元细胞输出'+brain.GetNumberOfOutput()+'个数值为'+brain.Update([1,1,0,1]));
-//console.log('权重数量：'+brain.GetNumberOfWeights()+'个分别为'+brain.GetWeights())
-//console.log(brain.CalculateSplitPoints())
 //https://github.com/koryako/aifh
 //https://cn.udacity.com/course/machine-learning-engineer-nanodegree--nd009
 //https://www.coursera.org/learn/machine-learning/home/welcome
