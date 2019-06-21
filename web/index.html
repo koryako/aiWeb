@@ -1,0 +1,217 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>webcam</title>
+<meta name="viewport" id="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
+</head>
+<style>
+*{margin:0;padding:0;}
+  #log{
+            position: absolute;
+            font-size: 10px;
+            color: #fff;
+        }
+
+</style>
+<body  >
+<p id="log"></p>
+<video width="480" height="480" id="myVideo" autoplay></video>
+<canvas width="480" height="480" id="myCanvas"></canvas>
+<canvas  id="myCanvas2"></canvas>
+<button id="myButton">拍摄</button>
+<button id="myButton2">预览</button>
+<button id="myButton3">
+<a download="video.png">另存为</a>
+</button>
+<script src="./tracking-min.js"></script>
+<script src="./face-min.js"></script>
+<script>
+
+
+  window.addEventListener('DOMContentLoaded',function(){
+        navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+       var canvas= document.getElementById('myCanvas')
+       var canvas2= document.getElementById('myCanvas2')
+       var cobj2=canvas2.getContext('2d');
+            var cobj=canvas.getContext('2d');
+            var vobj=document.getElementById('myVideo');
+           var rects={};
+           rects.width=240;
+           rects.height=400;
+           rects.x=120;
+           rects.y=0;
+            
+            navigator.getUserMedia({video:true,audio:false},function(stream){    
+                 //将采集到的视频信息显示在video标签中  		
+                vobj.srcObject = stream;   	 
+                vobj.play();
+              },function(error){console.log("Video capture error: ", error.code);});
+          
+
+               function step(timestamp) {
+                  cobj.clearRect(0,0,canvas.width,canvas.height);
+                  cobj.drawImage(vobj, 0, 0, canvas.width,canvas.height);
+                  cobj.strokeStyle="#a64ceb";
+                  cobj.strokeRect(rects.x,rects.y,rects.width,rects.height);
+                     window.requestAnimationFrame(step);
+  
+               }
+
+              window.requestAnimationFrame(step);
+
+          document.getElementById("myButton").addEventListener("click", function () {
+            console.log(rects);
+            canvas2.width = rects.width;
+            canvas2.height = rects.height;
+               //tracker.stop();
+              cobj2.clearRect(0, 0, rects.width,rects.height);
+              var dataimg= cobj.getImageData(rects.x,rects.y,rects.width,rects.height);
+              console.log(dataimg);
+             cobj2.scale(0.5,0.5)
+             cobj2.putImageData(dataimg,0,0);
+             var data = canvas2.toDataURL('image/jpeg',0.8);
+             console.log(data);
+             upload(data,'image/jpeg','http://localhost:3033/upload');
+            });
+
+            //    图片上传，将base64的图片转成二进制对象，塞进formdata上传
+ function upload(basestr, type, api) {
+    var text = window.atob(basestr.split(",")[1]);
+    var buffer = new Uint8Array(text.length);
+    var pecent = 0, loop = null;
+    for (var i = 0; i < text.length; i++) {
+      buffer[i] = text.charCodeAt(i);
+    }
+    var blob = getBlob([buffer], type);
+    var xhr = new XMLHttpRequest();
+    var formdata = getFormData();
+    formdata.append('imagefile', blob);
+    xhr.open('post', api);
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == 4 && xhr.status == 200) {
+        var jsonData = JSON.parse(xhr.responseText);
+        var imagedata = jsonData[0] || {};
+        var text = imagedata.path ? '上传成功' : '上传失败';
+        console.log(text + '：' + imagedata.path);
+        clearInterval(loop);
+        //当收到该消息时上传完毕
+     //   $li.find(".progress span").animate({'width': "100%"}, pecent < 95 ? 200 : 0, function() {
+         // $(this).html(text);
+       // });
+        if (!imagedata.path) return;
+        $(".pic-list").append('<a href="' + imagedata.path + '">' + imagedata.name + '（' + imagedata.size + '）<img src="' + imagedata.path + '" /></a>');
+      }
+    };
+    //数据发送进度，前50%展示该进度
+    xhr.upload.addEventListener('progress', function(e) {
+      if (loop) return;
+      pecent = ~~(100 * e.loaded / e.total) / 2;
+     // $li.find(".progress span").css('width', pecent + "%");
+      if (pecent == 50) {
+        mockProgress();
+      }
+    }, false);
+    //数据后50%用模拟进度
+    function mockProgress() {
+      if (loop) return;
+      loop = setInterval(function() {
+        pecent++;
+        $li.find(".progress span").css('width', pecent + "%");
+        if (pecent == 99) {
+          clearInterval(loop);
+        }
+      }, 100)
+    }
+    xhr.send(formdata);
+  }
+  /**
+   * 获取blob对象的兼容性写法
+   * @param buffer
+   * @param format
+   * @returns {*}
+   */
+  function getBlob(buffer, format) {
+    try {
+      return new Blob(buffer, {type: format});
+    } catch (e) {
+      var bb = new (window.BlobBuilder || window.WebKitBlobBuilder || window.MSBlobBuilder);
+      buffer.forEach(function(buf) {
+        bb.append(buf);
+      });
+      return bb.getBlob(format);
+    }
+  }
+  /**
+   * 获取formdata
+   */
+  function getFormData() {
+    var isNeedShim = ~navigator.userAgent.indexOf('Android')
+        && ~navigator.vendor.indexOf('Google')
+        && !~navigator.userAgent.indexOf('Chrome')
+        && navigator.userAgent.match(/AppleWebKit\/(\d+)/).pop() <= 534;
+    return isNeedShim ? new FormDataShim() : new FormData()
+  }
+  /**
+   * formdata 补丁, 给不支持formdata上传blob的android机打补丁
+   * @constructor
+   */
+  function FormDataShim() {
+    console.warn('using formdata shim');
+    var o = this,
+        parts = [],
+        boundary = Array(21).join('-') + (+new Date() * (1e16 * Math.random())).toString(36),
+        oldSend = XMLHttpRequest.prototype.send;
+    this.append = function(name, value, filename) {
+      parts.push('--' + boundary + '\r\nContent-Disposition: form-data; name="' + name + '"');
+      if (value instanceof Blob) {
+        parts.push('; filename="' + (filename || 'blob') + '"\r\nContent-Type: ' + value.type + '\r\n\r\n');
+        parts.push(value);
+      }
+      else {
+        parts.push('\r\n\r\n' + value);
+      }
+      parts.push('\r\n');
+    };
+    // Override XHR send()
+    XMLHttpRequest.prototype.send = function(val) {
+      var fr,
+          data,
+          oXHR = this;
+      if (val === o) {
+        // Append the final boundary string
+        parts.push('--' + boundary + '--\r\n');
+        // Create the blob
+        data = getBlob(parts);
+        // Set up and read the blob into an array to be sent
+        fr = new FileReader();
+        fr.onload = function() {
+          oldSend.call(oXHR, fr.result);
+        };
+        fr.onerror = function(err) {
+          throw err;
+        };
+        fr.readAsArrayBuffer(data);
+        // Set the multipart content type and boudary
+        this.setRequestHeader('Content-Type', 'multipart/form-data; boundary=' + boundary);
+        XMLHttpRequest.prototype.send = oldSend;
+      }
+      else {
+        oldSend.call(this, val);
+      }
+    };
+  }
+  });
+
+  </script>
+       <script>
+
+             
+
+//https://github.com/koryako/aifh
+//https://cn.udacity.com/course/machine-learning-engineer-nanodegree--nd009
+//https://www.coursera.org/learn/machine-learning/home/welcome
+//https://github.com/koryako/warriorjs*/
+</script>
+</body>
+</html>
