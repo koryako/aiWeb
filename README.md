@@ -3,7 +3,11 @@
 使用face-api.js 进行人脸识别
 1. 使用nodejs+express 起后台服务
 2. 使用canvas 截图头像图片上传服务器
-#参考资料
+
+
+
+
+#########参考资料
 想要训练专属人脸识别模型？先掌握构建人脸数据集的三种绝招
 https://cloud.tencent.com/developer/article/1166939
 
