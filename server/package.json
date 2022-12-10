@@ -15,7 +15,7 @@
     "@tensorflow/tfjs-node": "^1.2.1",
     "canvas": "^2.5.0",
     "ejs": "^2.6.1",
-    "express": "^4.16.4",
+    "express": "^4.17.3",
     "face-api.js": "^0.20.0",
     "formidable": "^1.2.1",
     "js-base64": "^2.5.1",
